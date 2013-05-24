@@ -32,6 +32,20 @@ class SecretsBehaviors(object):
         tomorrow = (datetime.today() + timedelta(days=1))
         return tomorrow.isoformat()
 
+    def create_and_check_secret(self, name=None, expiration=None,
+                                algorithm=None, bit_length=None,
+                                cypher_type=None, plain_text=None,
+                                mime_type=None):
+        resp = self.create_secret_overriding_cfg(
+            name=name, expiration=expiration, algorithm=algorithm,
+            bit_length=bit_length, cypher_type=cypher_type,
+            plain_text=plain_text, mime_type=mime_type)
+        get_resp = self.client.get_secret(resp['secret_id'])
+        return {
+            'create_resp': resp,
+            'get_resp': get_resp
+        }
+
     def create_secret_from_config(self, use_expiration=True,
                                   use_plain_text=True):
         expiration = None
@@ -51,6 +65,36 @@ class SecretsBehaviors(object):
             mime_type=self.config.mime_type)
         return resp
 
+    def create_secret_overriding_cfg(self, name=None, expiration=None,
+                                     algorithm=None, bit_length=None,
+                                     cypher_type=None, plain_text=None,
+                                     mime_type=None):
+        """
+        Allows for testing individual parameters on creation.
+        """
+        if name is None:
+            name = self.config.name
+        if algorithm is None:
+            algorithm = self.config.algorithm
+        if bit_length is None:
+            bit_length = self.config.bit_length
+        if cypher_type is None:
+            cypher_type = self.config.cypher_type
+        if plain_text is None:
+            plain_text = self.config.plain_text
+        if mime_type is None:
+            mime_type = self.config.mime_type
+
+        resp = self.create_secret(
+            name=name,
+            expiration=expiration,
+            algorithm=algorithm,
+            bit_length=bit_length,
+            cypher_type=cypher_type,
+            plain_text=plain_text,
+            mime_type=mime_type)
+        return resp
+
     def create_secret(self, name=None, expiration=None, algorithm=None,
                       bit_length=None, cypher_type=None, plain_text=None,
                       mime_type=None):
@@ -64,8 +108,10 @@ class SecretsBehaviors(object):
             mime_type=mime_type)
 
         secret_ref = resp.entity.reference
-        secret_id = self.get_secret_id_from_ref(secret_ref)
-        self.created_secrets.append(secret_id)
+        secret_id = None
+        if secret_ref:
+            secret_id = self.get_secret_id_from_ref(secret_ref)
+            self.created_secrets.append(secret_id)
 
         return {
             'status_code': resp.status_code,
