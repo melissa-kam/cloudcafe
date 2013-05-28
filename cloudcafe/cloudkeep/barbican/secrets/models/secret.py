@@ -82,6 +82,12 @@ class SecretMetadata(Secret):
         self.created = created
         self.secret_ref = secret_ref
 
+    def __eq__(self, other):
+        return other.secret_ref == self.secret_ref
+
+    def __ne__(self, other):
+        return not self == other
+
     def get_id(self):
         ref_id = None
         if len(self.secret_ref) > 0:
