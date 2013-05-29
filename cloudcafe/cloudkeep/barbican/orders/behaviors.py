@@ -54,8 +54,10 @@ class OrdersBehavior(object):
                 return {'status_code': 0}
 
         order_ref = resp.entity.reference
-        order_id = self.get_id_from_ref(order_ref)
-        self.created_orders.append(order_id)
+        order_id = None
+        if order_ref is not None:
+            order_id = self.get_id_from_ref(order_ref)
+            self.created_orders.append(order_id)
 
         return {
             'status_code': resp.status_code,
