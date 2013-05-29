@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from os import path
+from httplib import BadStatusLine
+from requests.exceptions import ConnectionError
 
 
 class OrdersBehavior(object):
@@ -30,22 +32,26 @@ class OrdersBehavior(object):
         return path.split(ref)[1]
 
     def create_order_from_config(self):
-        resp = self.create_order(name=self.config.name,
+        resp = self.create_order(
+            name=self.config.name,
             algorithm=self.config.algorithm,
             bit_length=self.config.bit_length,
             cypher_type=self.config.cypher_type,
             mime_type=self.config.mime_type)
         return resp
 
-
     def create_order(self, name=None, algorithm=None, bit_length=None,
                      cypher_type=None, mime_type=None):
-        resp = self.client.create_order(
-            name=name,
-            algorithm=algorithm,
-            bit_length=bit_length,
-            cypher_type=cypher_type,
-            mime_type=mime_type)
+        try:
+            resp = self.client.create_order(
+                name=name,
+                algorithm=algorithm,
+                bit_length=bit_length,
+                cypher_type=cypher_type,
+                mime_type=mime_type)
+        except ConnectionError as e:
+            if type(e.message.reason) is BadStatusLine:
+                return {'status_code': 0}
 
         order_ref = resp.entity.reference
         order_id = self.get_id_from_ref(order_ref)
@@ -90,5 +96,3 @@ class OrdersBehavior(object):
             self.delete_order(order_id, delete_secret=True)
 
         self.created_orders = []
-
-
