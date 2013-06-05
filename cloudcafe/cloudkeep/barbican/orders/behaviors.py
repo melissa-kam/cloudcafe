@@ -31,6 +31,26 @@ class OrdersBehavior(object):
     def get_id_from_ref(self, ref):
         return path.split(ref)[1]
 
+    def create_and_check_order(self, name=None, algorithm=None, bit_length=None,
+                               cypher_type=None, mime_type=None):
+
+        resp = self.create_order(
+            name=name, algorithm=algorithm, bit_length=bit_length,
+            cypher_type=cypher_type, mime_type=mime_type)
+
+        get_order_resp = self.client.get_order(order_id=resp['order_id'])
+
+        secret_href = get_order_resp.entity.secret_href
+        secret_id = self.get_id_from_ref(ref=secret_href)
+        get_secret_resp = self.secrets_client.get_secret(
+            secret_id=secret_id, mime_type=mime_type)
+
+        return {
+            'create_resp': resp,
+            'get_order_resp': get_order_resp,
+            'get_secret_resp': get_secret_resp
+        }
+
     def create_order_from_config(self):
         resp = self.create_order(
             name=self.config.name,
