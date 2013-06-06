@@ -48,7 +48,8 @@ class OrdersBehavior(object):
         return {
             'create_resp': resp,
             'get_order_resp': get_order_resp,
-            'get_secret_resp': get_secret_resp
+            'get_secret_resp': get_secret_resp,
+            'secret_id': secret_id
         }
 
     def create_order_from_config(self):
