@@ -15,7 +15,7 @@ limitations under the License.
 """
 from cafe.engine.clients.rest import AutoMarshallingRestClient
 from cloudcafe.cloudkeep.barbican.secrets.models.secret \
-    import Secret, SecretGroup, SecretRef, UpdateSecret, SecretMetadata
+    import Secret, SecretGroup, SecretRef, SecretMetadata
 
 
 class SecretsClient(AutoMarshallingRestClient):

@@ -31,9 +31,9 @@ class OrdersBehavior(object):
     def get_id_from_ref(self, ref):
         return path.split(ref)[1]
 
-    def create_and_check_order(self, name=None, algorithm=None, bit_length=None,
-                               cypher_type=None, mime_type=None):
-
+    def create_and_check_order(self, name=None, algorithm=None,
+                               bit_length=None, cypher_type=None,
+                               mime_type=None):
         resp = self.create_order(
             name=name, algorithm=algorithm, bit_length=bit_length,
             cypher_type=cypher_type, mime_type=mime_type)
