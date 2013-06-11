@@ -59,7 +59,6 @@ class Secret(AutoMarshallingModel):
         if self.content_types is not None:
             converted['content_types'] = self.content_types
 
-
         return converted
 
     @classmethod
