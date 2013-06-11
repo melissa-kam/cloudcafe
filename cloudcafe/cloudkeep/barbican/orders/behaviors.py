@@ -42,7 +42,7 @@ class OrdersBehavior(object):
         """
         Creates order, gets order, and gets secret made by order.
         """
-        resp = self.create_order(
+        resp = self.create_order_overriding_cfg(
             name=name, algorithm=algorithm, bit_length=bit_length,
             cypher_type=cypher_type, mime_type=mime_type)
 
