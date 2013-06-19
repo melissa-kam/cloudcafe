@@ -18,10 +18,11 @@ from datetime import datetime, timedelta
 
 class ClientLibSecretsBehaviors(object):
 
-    def __init__(self, client, client_lib, config):
-        self.client = client
-        self.client_lib = client_lib
+    def __init__(self, cl_client, barb_client, barb_behaviors, config):
+        self.barb_client = barb_client
+        self.cl_client = cl_client
         self.config = config
+        self.barb_behaviors = barb_behaviors
 
         self.created_secrets = []
 
@@ -37,7 +38,7 @@ class ClientLibSecretsBehaviors(object):
             name=name, expiration=expiration, algorithm=algorithm,
             bit_length=bit_length, cypher_type=cypher_type,
             plain_text=plain_text, mime_type=mime_type)
-        resp = self.client.get_secret(secret.id)
+        resp = self.barb_client.get_secret(secret.id)
         return {
             'secret': secret,
             'get_resp': resp
@@ -95,7 +96,7 @@ class ClientLibSecretsBehaviors(object):
     def create_secret(self, name=None, expiration=None, algorithm=None,
                       bit_length=None, cypher_type=None, plain_text=None,
                       mime_type=None):
-        secret = self.client_lib.create_secret(
+        secret = self.cl_client.create_secret(
             name=name,
             expiration=expiration,
             algorithm=algorithm,
@@ -107,12 +108,42 @@ class ClientLibSecretsBehaviors(object):
         self.created_secrets.append(secret.id)
         return secret
 
-    def delete_secret(self, secret_id):
-        resp = self.client.delete_secret(secret_id)
+    def delete_secret(self, secret_ref):
+        resp = self.cl_client.delete_secret(secret_ref=secret_ref)
+        return resp
+
+    def delete_secret_by_id(self, secret_id):
+        resp = self.cl_client.delete_secret_by_id(secret_id=secret_id)
         return resp
 
     def delete_all_created_secrets(self):
         for secret_id in self.created_secrets:
-            self.delete_secret(secret_id)
+            self.delete_secret_by_id(secret_id=secret_id)
 
         self.created_secrets = []
+
+    def barbican_create_secret_from_config(self, use_expiration=True,
+                                           use_plain_text=True):
+        resp = self.barb_behaviors.create_secret_from_config(
+            use_expiration=use_expiration, use_plain_text=use_plain_text)
+
+        return resp
+
+    def barbican_create_secret_overriding_cfg(self, name=None,
+                                              expiration=None,
+                                              algorithm=None,
+                                              bit_length=None,
+                                              cypher_type=None,
+                                              plain_text=None,
+                                              mime_type=None):
+        resp = self.barb_behaviors.create_secret_from_config(
+            name=name, expiration=expiration, algorithm=algorithm,
+            bit_length=bit_length, cypher_type=cypher_type,
+            plain_text=plain_text, mime_type=mime_type)
+
+        secret_ref = resp.entity.reference
+        secret_id = None
+        if secret_ref:
+            secret_id = self.get_secret_id_from_ref(secret_ref)
+            self.created_secrets.append(secret_id)
+        return resp
