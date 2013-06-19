@@ -32,15 +32,15 @@ class ClientLibOrdersClient():
             authenticate=authenticate, request=request, **kwargs)
 
     def create_order(self, name=None, expiration=None, algorithm=None,
-                      bit_length=None, cypher_type=None, mime_type=None):
+                     bit_length=None, cypher_type=None, mime_type=None):
         order = self.conn.create_order(
             name=name, algorithm=algorithm, bit_length=bit_length,
             cypher_type=cypher_type, mime_type=mime_type)
 
         return order
 
-    def list_prders(self):
-        return self.conn.list_order()
+    def list_orders(self):
+        return self.conn.list_orders()
 
     def delete_order_by_id(self, order_id):
         return self.conn.delete_order_by_id(order_id=order_id)
@@ -53,10 +53,3 @@ class ClientLibOrdersClient():
 
     def get_order(self, href):
         return self.conn.get_order(href=href)
-
-    def get_raw_order_by_id(self, order_id, mime_type):
-        return self.conn.get_raw_order_by_id(
-            order_id=order_id, mime_type=mime_type)
-
-    def get_raw_order(self, href, mime_type):
-        return self.conn.get_raw_order(href=href, mime_type=mime_type)

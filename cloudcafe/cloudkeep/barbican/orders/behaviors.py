@@ -128,10 +128,9 @@ class OrdersBehavior(object):
     def delete_order(self, order_id, delete_secret=True):
         if delete_secret:
             order = self.client.get_order(order_id).entity
-            if order is not None:
-                secret_href = order.secret_href
-                secret_id = self.get_id_from_ref(secret_href)
-                self.secrets_client.delete_secret(secret_id)
+            secret_href = order.secret_href
+            secret_id = self.get_id_from_ref(secret_href)
+            self.secrets_client.delete_secret(secret_id)
 
         resp = self.client.delete_order(order_id)
         if order_id in self.created_orders:
