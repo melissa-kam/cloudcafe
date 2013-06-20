@@ -21,13 +21,13 @@ from datetime import datetime, timedelta
 
 class OrdersBehavior(object):
 
+    created_orders = []
+
     def __init__(self, client, secrets_client, config):
         super(OrdersBehavior, self).__init__()
         self.client = client
         self.secrets_client = secrets_client
         self.config = config
-
-        self.created_orders = []
 
     def get_id_from_ref(self, ref):
         return path.split(ref)[1]
@@ -116,7 +116,7 @@ class OrdersBehavior(object):
         order_id = None
         if order_ref is not None:
             order_id = self.get_id_from_ref(order_ref)
-            self.created_orders.append(order_id)
+            OrdersBehavior.created_orders.append(order_id)
 
         return {
             'status_code': resp.status_code,
@@ -126,6 +126,7 @@ class OrdersBehavior(object):
         }
 
     def delete_order(self, order_id, delete_secret=True):
+        self.remove_from_created_secrets(order_id)
         if delete_secret:
             order = self.client.get_order(order_id).entity
             secret_href = order.secret_href
@@ -133,8 +134,8 @@ class OrdersBehavior(object):
             self.secrets_client.delete_secret(secret_id)
 
         resp = self.client.delete_order(order_id)
-        if order_id in self.created_orders:
-            self.created_orders.remove(order_id)
+        if order_id in OrdersBehavior.created_orders:
+            OrdersBehavior.created_orders.remove(order_id)
         return resp
 
     def delete_all_orders_in_db(self):
@@ -153,10 +154,14 @@ class OrdersBehavior(object):
             self.delete_order(order_id)
 
     def delete_all_created_orders_and_secrets(self):
-        for order_id in self.created_orders:
+        for order_id in OrdersBehavior.created_orders:
             self.delete_order(order_id, delete_secret=True)
 
-        self.created_orders = []
+        OrdersBehavior.created_orders = []
+
+    def remove_from_created_secrets(self, order_id):
+        if order_id in OrdersBehavior.created_orders:
+            OrdersBehavior.created_orders.remove(order_id)
 
     def find_order(self, order_id):
         order_group = self.client.get_orders().entity

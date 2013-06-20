@@ -15,10 +15,13 @@ limitations under the License.
 """
 from datetime import datetime, timedelta
 from os import path
+from cloudcafe.cloudkeep.barbican.orders.behaviors import OrdersBehavior
 
 
-class ClientLibOrdersBehaviors(object):
+class ClientLibOrdersBehaviors(OrdersBehavior):
     def __init__(self, barb_client, secrets_client, cl_client, config):
+        super(ClientLibOrdersBehaviors, self).__init__(
+            barb_client, secrets_client, config)
         self.barb_client = barb_client
         self.config = config
         self.secrets_client = secrets_client

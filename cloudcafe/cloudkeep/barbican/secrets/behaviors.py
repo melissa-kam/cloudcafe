@@ -18,12 +18,12 @@ from datetime import datetime, timedelta
 
 
 class SecretsBehaviors(object):
+    created_secrets = []
 
     def __init__(self, client, config):
         self.client = client
         self.config = config
-
-        self.created_secrets = []
+        #self.created_secrets = []
 
     def get_secret_id_from_ref(self, secret_ref):
         return path.split(secret_ref)[1]
@@ -111,7 +111,7 @@ class SecretsBehaviors(object):
         secret_id = None
         if secret_ref:
             secret_id = self.get_secret_id_from_ref(secret_ref)
-            self.created_secrets.append(secret_id)
+            SecretsBehaviors.created_secrets.append(secret_id)
 
         return {
             'status_code': resp.status_code,
@@ -121,14 +121,18 @@ class SecretsBehaviors(object):
         }
 
     def delete_secret(self, secret_id):
+        self.remove_from_created_secrets(secret_id=secret_id)
         resp = self.client.delete_secret(secret_id)
         return resp
 
     def delete_all_created_secrets(self):
-        for secret_id in self.created_secrets:
+        for secret_id in SecretsBehaviors.created_secrets:
             self.delete_secret(secret_id)
+        SecretsBehaviors.created_secrets = []
 
-        self.created_secrets = []
+    def remove_from_created_secrets(self, secret_id):
+        if secret_id in SecretsBehaviors.created_secrets:
+            SecretsBehaviors.created_secrets.remove(secret_id)
 
     def delete_all_secrets_in_db(self):
         secret_group = self.client.get_secrets().entity
