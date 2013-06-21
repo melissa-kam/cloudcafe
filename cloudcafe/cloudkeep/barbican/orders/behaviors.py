@@ -20,14 +20,13 @@ from datetime import datetime, timedelta
 
 
 class OrdersBehavior(object):
-
-    created_orders = []
-
-    def __init__(self, client, secrets_client, config):
+    
+    def __init__(self, orders_client, secrets_client, config):
         super(OrdersBehavior, self).__init__()
-        self.client = client
+        self.orders_client = orders_client
         self.secrets_client = secrets_client
         self.config = config
+        self.created_orders = []
 
     def get_id_from_ref(self, ref):
         return path.split(ref)[1]
@@ -46,7 +45,7 @@ class OrdersBehavior(object):
             name=name, algorithm=algorithm, bit_length=bit_length,
             cypher_type=cypher_type, mime_type=mime_type)
 
-        get_order_resp = self.client.get_order(order_id=resp['order_id'])
+        get_order_resp = self.orders_client.get_order(order_id=resp['order_id'])
 
         secret_href = get_order_resp.entity.secret_href
         secret_id = self.get_id_from_ref(ref=secret_href)
@@ -101,7 +100,7 @@ class OrdersBehavior(object):
     def create_order(self, name=None, algorithm=None, bit_length=None,
                      cypher_type=None, mime_type=None, expiration=None):
         try:
-            resp = self.client.create_order(
+            resp = self.orders_client.create_order(
                 name=name,
                 algorithm=algorithm,
                 bit_length=bit_length,
@@ -116,7 +115,7 @@ class OrdersBehavior(object):
         order_id = None
         if order_ref is not None:
             order_id = self.get_id_from_ref(order_ref)
-            OrdersBehavior.created_orders.append(order_id)
+            self.created_orders.append(order_id)
 
         return {
             'status_code': resp.status_code,
@@ -126,26 +125,26 @@ class OrdersBehavior(object):
         }
 
     def delete_order(self, order_id, delete_secret=True):
-        self.remove_from_created_secrets(order_id)
+        self.remove_from_created_orders(order_id)
         if delete_secret:
-            order = self.client.get_order(order_id).entity
+            order = self.orders_client.get_order(order_id).entity
             secret_href = order.secret_href
             secret_id = self.get_id_from_ref(secret_href)
             self.secrets_client.delete_secret(secret_id)
 
-        resp = self.client.delete_order(order_id)
-        if order_id in OrdersBehavior.created_orders:
-            OrdersBehavior.created_orders.remove(order_id)
+        resp = self.orders_client.delete_order(order_id)
+        if order_id in self.created_orders:
+            self.created_orders.remove(order_id)
         return resp
 
     def delete_all_orders_in_db(self):
-        order_group = self.client.get_orders().entity
+        order_group = self.orders_client.get_orders().entity
         found_ids = []
         found_ids.extend(order_group.get_ids())
 
         while order_group.next is not None:
             query = order_group.get_next_query_data()
-            order_group = self.client.get_orders(
+            order_group = self.orders_client.get_orders(
                 limit=query['limit'],
                 offset=query['offset']).entity
             found_ids.extend(order_group.get_ids())
@@ -154,22 +153,22 @@ class OrdersBehavior(object):
             self.delete_order(order_id)
 
     def delete_all_created_orders_and_secrets(self):
-        for order_id in OrdersBehavior.created_orders:
+        for order_id in self.created_orders:
             self.delete_order(order_id, delete_secret=True)
 
-        OrdersBehavior.created_orders = []
+        self.created_orders = []
 
-    def remove_from_created_secrets(self, order_id):
-        if order_id in OrdersBehavior.created_orders:
-            OrdersBehavior.created_orders.remove(order_id)
+    def remove_from_created_orders(self, order_id):
+        if order_id in self.created_orders:
+            self.created_orders.remove(order_id)
 
     def find_order(self, order_id):
-        order_group = self.client.get_orders().entity
+        order_group = self.orders_client.get_orders().entity
 
         ids = order_group.get_ids()
         while order_id not in ids and order_group.next is not None:
             query = order_group.get_next_query_data()
-            order_group = self.client.get_orders(
+            order_group = self.orders_client.get_orders(
                 limit=query['limit'],
                 offset=query['offset']).entity
             ids = order_group.get_ids()

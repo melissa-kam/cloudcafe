@@ -13,8 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from os import path
-from datetime import datetime, timedelta
 from cloudcafe.cloudkeep.barbican.secrets.behaviors import SecretsBehaviors
 
 
@@ -26,13 +24,6 @@ class ClientLibSecretsBehaviors(SecretsBehaviors):
         self.barb_client = barb_client
         self.cl_client = cl_client
         self.config = config
-
-    def get_secret_id_from_ref(self, secret_ref):
-        return path.split(secret_ref)[1]
-
-    def get_tomorrow_timestamp(self):
-        tomorrow = (datetime.today() + timedelta(days=1))
-        return tomorrow.isoformat()
 
     def create_and_check_secret(self, name=None, expiration=None,
                                 algorithm=None, bit_length=None,
@@ -48,55 +39,6 @@ class ClientLibSecretsBehaviors(SecretsBehaviors):
             'get_resp': resp
         }
 
-    def create_secret_from_config(self, use_expiration=True,
-                                  use_plain_text=True):
-        expiration = None
-        data = None
-        if use_expiration:
-            expiration = self.get_tomorrow_timestamp()
-        if use_plain_text:
-            data = self.config.plain_text
-
-        secret = self.create_secret(
-            name=self.config.name,
-            expiration=expiration,
-            algorithm=self.config.algorithm,
-            bit_length=self.config.bit_length,
-            cypher_type=self.config.cypher_type,
-            plain_text=data,
-            mime_type=self.config.mime_type)
-        return secret
-
-    def create_secret_overriding_cfg(self, name=None, expiration=None,
-                                     algorithm=None, bit_length=None,
-                                     cypher_type=None, plain_text=None,
-                                     mime_type=None):
-        """
-        Allows for testing individual parameters on creation.
-        """
-        if name is None:
-            name = self.config.name
-        if algorithm is None:
-            algorithm = self.config.algorithm
-        if bit_length is None:
-            bit_length = self.config.bit_length
-        if cypher_type is None:
-            cypher_type = self.config.cypher_type
-        if plain_text is None:
-            plain_text = self.config.plain_text
-        if mime_type is None:
-            mime_type = self.config.mime_type
-
-        secret = self.create_secret(
-            name=name,
-            expiration=expiration,
-            algorithm=algorithm,
-            bit_length=bit_length,
-            cypher_type=cypher_type,
-            plain_text=plain_text,
-            mime_type=mime_type)
-        return secret
-
     def create_secret(self, name=None, expiration=None, algorithm=None,
                       bit_length=None, cypher_type=None, plain_text=None,
                       mime_type=None):
@@ -109,7 +51,7 @@ class ClientLibSecretsBehaviors(SecretsBehaviors):
             plain_text=plain_text,
             mime_type=mime_type)
 
-        SecretsBehaviors.created_secrets.append(secret.id)
+        self.created_secrets.append(secret.id)
         return secret
 
     def delete_secret(self, secret_ref):
@@ -124,6 +66,6 @@ class ClientLibSecretsBehaviors(SecretsBehaviors):
         return resp
 
     def delete_all_created_secrets(self):
-        for secret_id in SecretsBehaviors.created_secrets:
+        for secret_id in self.created_secrets:
             self.delete_secret_by_id(secret_id=secret_id)
-        SecretsBehaviors.created_secrets = []
+        self.created_secrets = []
