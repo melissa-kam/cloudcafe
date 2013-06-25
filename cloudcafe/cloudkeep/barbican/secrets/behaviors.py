@@ -71,27 +71,14 @@ class SecretsBehaviors(object):
         """
         Allows for testing individual parameters on creation.
         """
-        if name is None:
-            name = self.config.name
-        if algorithm is None:
-            algorithm = self.config.algorithm
-        if bit_length is None:
-            bit_length = self.config.bit_length
-        if cypher_type is None:
-            cypher_type = self.config.cypher_type
-        if plain_text is None:
-            plain_text = self.config.plain_text
-        if mime_type is None:
-            mime_type = self.config.mime_type
-
         resp = self.create_secret(
-            name=name,
-            expiration=expiration,
-            algorithm=algorithm,
-            bit_length=bit_length,
-            cypher_type=cypher_type,
-            plain_text=plain_text,
-            mime_type=mime_type)
+            name=name or self.config.name,
+            algorithm=algorithm or self.config.algorithm,
+            bit_length=bit_length or self.config.bit_length,
+            cypher_type=cypher_type or self.config.cypher_type,
+            plain_text=plain_text or self.config.plain_text,
+            mime_type=mime_type or self.config.mime_type,
+            expiration=expiration)
         return resp
 
     def create_secret(self, name=None, expiration=None, algorithm=None,
@@ -125,7 +112,7 @@ class SecretsBehaviors(object):
         return resp
 
     def delete_all_created_secrets(self):
-        for secret_id in self.created_secrets:
+        for secret_id in list(self.created_secrets):
             self.delete_secret(secret_id)
         self.created_secrets = []
 

@@ -51,20 +51,33 @@ class ClientLibOrdersBehaviors(OrdersBehavior):
         self.created_orders.append(order.id)
         return order
 
-    def delete_order(self, order_id, delete_secret=True):
+    def delete_order(self, order_ref, delete_secret=True):
         if delete_secret:
-            order = self.barb_client.get_order(order_id).entity
-            secret_href = order.secret_href
+            order = self.cl_client.get_order(order_ref)
+            secret_ref = order.secret_ref
+            secret_id = self.get_id_from_ref(secret_ref)
+            self.secrets_client.delete_secret(secret_id)
+
+        resp = self.cl_client.delete_order(order_ref)
+        order_id = self.get_id_from_ref(order_ref)
+        if order_id in self.created_orders:
+            self.created_orders.remove(order_id)
+        return resp
+
+    def delete_order_by_id(self, order_id, delete_secret=True):
+        if delete_secret:
+            order = self.cl_client.get_order_by_id(order_id)
+            secret_href = order.secret_ref
             secret_id = self.get_id_from_ref(secret_href)
             self.secrets_client.delete_secret(secret_id)
 
-        resp = self.barb_client.delete_order(order_id)
+        resp = self.cl_client.delete_order_by_id(order_id)
         if order_id in self.created_orders:
             self.created_orders.remove(order_id)
         return resp
 
     def delete_all_created_orders_and_secrets(self):
         for order_id in self.created_orders:
-            self.delete_order(order_id, delete_secret=True)
+            self.delete_order_by_id(order_id, delete_secret=True)
 
         self.created_orders = []
