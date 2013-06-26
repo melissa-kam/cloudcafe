@@ -23,11 +23,10 @@ class ClientLibSecretsClient():
         self.url = url
         self.api_version = api_version
         self.tenant_id = tenant_id
-        endpoint = '{base}/{api_version}/{tenant_id}'.format(
-            base=self.url, api_version=self.api_version,
-            tenant_id=self.tenant_id)
+        self.endpoint = '{base}/{api_version}'.format(
+            base=self.url, api_version=self.api_version)
         self.conn = Connection(
-            endpoint=endpoint, auth_endpoint=auth_endpoint,
+            endpoint=self.endpoint, auth_endpoint=auth_endpoint,
             user=user, key=key, tenant=tenant_id, token=token,
             authenticate=authenticate, request=request, **kwargs)
 
@@ -41,8 +40,19 @@ class ClientLibSecretsClient():
 
         return secret
 
-    def list_secrets(self):
-        return self.conn.list_secrets()
+    def list_secrets(self, limit=None, offset=None):
+        if limit is not None and offset is not None:
+            return self.conn.list_secrets(limit=limit, offset=offset)
+        else:
+            return self.conn.list_secrets()
+
+    def list_secrets_by_href(self, href=None):
+        if href is None:
+            href = '{endpoint}/{tenant_id}/secrets'.format(
+                endpoint=self.endpoint,
+                tenant_id=self.tenant_id)
+
+        return self.conn.list_secrets_by_href(href=href)
 
     def delete_secret_by_id(self, secret_id):
         return self.conn.delete_secret_by_id(secret_id=secret_id)

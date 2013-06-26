@@ -23,11 +23,10 @@ class ClientLibOrdersClient():
         self.url = url
         self.api_version = api_version
         self.tenant_id = tenant_id
-        endpoint = '{base}/{api_version}/{tenant_id}'.format(
-            base=self.url, api_version=self.api_version,
-            tenant_id=self.tenant_id)
+        self.endpoint = '{base}/{api_version}'.format(
+            base=self.url, api_version=self.api_version)
         self.conn = Connection(
-            endpoint=endpoint, auth_endpoint=auth_endpoint,
+            endpoint=self.endpoint, auth_endpoint=auth_endpoint,
             user=user, key=key, tenant=tenant_id, token=token,
             authenticate=authenticate, request=request, **kwargs)
 
@@ -39,8 +38,19 @@ class ClientLibOrdersClient():
 
         return order
 
-    def list_orders(self):
-        return self.conn.list_orders()
+    def list_orders(self, limit=None, offset=None):
+        if limit is not None and offset is not None:
+            return self.conn.list_orders(limit=limit, offset=offset)
+        else:
+            return self.conn.list_orders()
+
+    def list_orders_by_href(self, href=None):
+        if href is None:
+            href = '{endpoint}/{tenant_id}/orders'.format(
+                endpoint=self.endpoint,
+                tenant_id=self.tenant_id)
+
+        return self.conn.list_orders_by_href(href=href)
 
     def delete_order_by_id(self, order_id):
         return self.conn.delete_order_by_id(order_id=order_id)
