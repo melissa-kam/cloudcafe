@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 
 
 class OrdersBehavior(object):
-    
+
     def __init__(self, orders_client, secrets_client, config):
         super(OrdersBehavior, self).__init__()
         self.orders_client = orders_client
