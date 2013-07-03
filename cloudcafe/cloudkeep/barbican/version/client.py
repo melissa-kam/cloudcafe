@@ -28,9 +28,10 @@ class VersionClient(AutoMarshallingRestClient):
                                             deserialize_format)
         self.url = url
 
-    def get_version(self):
+    def get_version(self, headers=None):
         """
         @summary: Retrieves the version information from the API
         """
-        resp = self.request('GET', self.url, response_entity_type=Version)
+        resp = self.request('GET', self.url, headers=headers,
+                            response_entity_type=Version)
         return resp
