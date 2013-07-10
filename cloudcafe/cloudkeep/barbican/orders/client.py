@@ -79,3 +79,7 @@ class OrdersClient(AutoMarshallingRestClient):
                             params={'limit': limit, 'offset': offset},
                             response_entity_type=OrderGroup)
         return resp
+
+    def get_orders_by_ref(self, ref):
+        resp = self.request('GET', ref, response_entity_type=OrderGroup)
+        return resp

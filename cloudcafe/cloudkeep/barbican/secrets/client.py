@@ -97,6 +97,10 @@ class SecretsClient(AutoMarshallingRestClient):
                             response_entity_type=SecretGroup)
         return resp
 
+    def get_secrets_by_ref(self, ref):
+        resp = self.request('GET', ref, response_entity_type=SecretGroup)
+        return resp
+
     def delete_secret(self, secret_id):
         """
         DELETE http://.../v1/{tenant_id}/secrets/{secret_uuid}
