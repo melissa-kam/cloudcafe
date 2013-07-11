@@ -98,6 +98,10 @@ class SecretsClient(AutoMarshallingRestClient):
         return resp
 
     def get_secrets_by_ref(self, ref):
+        """
+        GET {ref}
+        Retrieves a list of secrets via ref
+        """
         resp = self.request('GET', ref, response_entity_type=SecretGroup)
         return resp
 

@@ -81,5 +81,9 @@ class OrdersClient(AutoMarshallingRestClient):
         return resp
 
     def get_orders_by_ref(self, ref):
+        """
+        GET {ref}
+        Retrieves a list of orders via ref
+        """
         resp = self.request('GET', ref, response_entity_type=OrderGroup)
         return resp
