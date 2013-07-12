@@ -86,8 +86,12 @@ class SecretsClient(AutoMarshallingRestClient):
                             response_entity_type=resp_type)
         return resp
 
-    def get_secrets(self, limit=None, offset=None):
-        remote_url = '{base}/secrets'.format(base=self._get_base_url())
+    def get_secrets(self, limit=None, offset=None, ref=None):
+        """
+        GET http://.../v1/orders?limit={limit}&offset={offset} or {ref}
+        Gets a list of orders
+        """
+        remote_url = ref or '{base}/secrets'.format(base=self._get_base_url())
         if limit is not None and offset is not None:
             remote_url = '{path}?limit={limit}&offset={offset}'.format(
                 path=remote_url,
@@ -95,14 +99,6 @@ class SecretsClient(AutoMarshallingRestClient):
                 offset=offset)
         resp = self.request('GET', remote_url,
                             response_entity_type=SecretGroup)
-        return resp
-
-    def get_secrets_by_ref(self, ref):
-        """
-        GET {ref}
-        Retrieves a list of secrets via ref
-        """
-        resp = self.request('GET', ref, response_entity_type=SecretGroup)
         return resp
 
     def delete_secret(self, secret_id):
