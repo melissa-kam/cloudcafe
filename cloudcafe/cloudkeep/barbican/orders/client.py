@@ -80,12 +80,12 @@ class OrdersClient(AutoMarshallingRestClient):
                             response_entity_type=OrderRef)
         return resp
 
-    def get_order(self, order_id):
+    def get_order(self, order_id=None, ref=None):
         """
         GET http://.../v1/{tenant_id}/orders/{order_uuid}
         Retrieves an order
         """
-        remote_url = self._get_order_url(order_id)
+        remote_url = ref or self._get_order_url(order_id)
         return self.request('GET', remote_url, response_entity_type=Order)
 
     def delete_order(self, order_id):

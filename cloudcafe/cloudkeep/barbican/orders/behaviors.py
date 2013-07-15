@@ -120,6 +120,39 @@ class OrdersBehavior(object):
             'resp_obj': resp
         }
 
+    def create_order_w_plain_text(self, name=None, algorithm=None,
+                                  bit_length=None, cypher_type=None,
+                                  mime_type=None, expiration=None,
+                                  plain_text=None):
+        try:
+            resp = self.orders_client.create_order_w_plain_text(
+                name=name,
+                algorithm=algorithm,
+                bit_length=bit_length,
+                cypher_type=cypher_type,
+                mime_type=mime_type,
+                expiration=expiration,
+                plain_text=plain_text)
+        except ConnectionError as e:
+            # Gracefully handling when Falcon doesn't properly handle our req
+            if type(e.message.reason) is BadStatusLine:
+                return {'status_code': 0}
+
+        order_ref = order_id = None
+        if resp.entity is not None:
+            order_ref = resp.entity.reference
+
+        if order_ref is not None:
+            order_id = self.get_id_from_ref(order_ref)
+            self.created_orders.append(order_id)
+
+        return {
+            'status_code': resp.status_code,
+            'order_ref': order_ref,
+            'order_id': order_id,
+            'resp_obj': resp
+        }
+
     def delete_order(self, order_id, delete_secret=True):
         if delete_secret:
             order = self.orders_client.get_order(order_id).entity
