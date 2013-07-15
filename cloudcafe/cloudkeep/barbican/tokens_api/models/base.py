@@ -17,7 +17,8 @@ limitations under the License.
 from cafe.engine.models.base import \
     AutoMarshallingModel, AutoMarshallingListModel
 
-from cloudcafe.cloudkeep.barbican.tokens_api.models.constants import V2_0Constants
+from cloudcafe.cloudkeep.barbican.tokens_api.models.constants import \
+    V2_0Constants
 
 
 class BaseIdentityModel(AutoMarshallingModel):

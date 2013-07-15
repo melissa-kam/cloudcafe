@@ -16,7 +16,7 @@ limitations under the License.
 
 import json
 from xml.etree import ElementTree
-from cloudcafe.identity.v2_0.tokens_api.models.base import \
+from cloudcafe.cloudkeep.barbican.tokens_api.models.base import \
     BaseIdentityModel, BaseIdentityListModel
 
 
@@ -125,6 +125,3 @@ class Version(BaseIdentityModel):
         self.id = id
         self.info = info
         self.list = list
-
-
-

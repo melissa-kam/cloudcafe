@@ -72,6 +72,7 @@ class CloudKeepSecretsConfig(ConfigSectionInterface):
     def mime_type(self):
         return self.get("mime_type")
 
+
 class CloudKeepOrdersConfig(ConfigSectionInterface):
     SECTION_NAME = 'cloudkeep-orders'
 
@@ -94,6 +95,7 @@ class CloudKeepOrdersConfig(ConfigSectionInterface):
     @property
     def mime_type(self):
         return self.get("mime_type")
+
 
 class CloudKeepClientLibConfig(ConfigSectionInterface):
     SECTION_NAME = 'cloudkeep-client-lib'

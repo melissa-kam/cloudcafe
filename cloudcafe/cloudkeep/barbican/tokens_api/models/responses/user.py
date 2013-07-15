@@ -16,9 +16,10 @@ limitations under the License.
 
 import json
 from xml.etree import ElementTree
-from cloudcafe.identity.v2_0.tokens_api.models.base import \
+from cloudcafe.cloudkeep.barbican.tokens_api.models.base import \
     BaseIdentityModel, BaseIdentityListModel
-from cloudcafe.identity.v2_0.tokens_api.models.responses.role import Roles, Role
+from cloudcafe.cloudkeep.barbican.tokens_api.models.responses.role import \
+    Roles, Role
 
 
 class Users(BaseIdentityListModel):

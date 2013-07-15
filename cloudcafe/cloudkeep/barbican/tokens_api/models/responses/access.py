@@ -15,7 +15,7 @@ limitations under the License.
 """
 import json
 
-from cloudcafe.identity.v2_0.tokens_api.models.base import \
+from cloudcafe.cloudkeep.barbican.tokens_api.models.base import \
     BaseIdentityModel, BaseIdentityListModel
 
 
