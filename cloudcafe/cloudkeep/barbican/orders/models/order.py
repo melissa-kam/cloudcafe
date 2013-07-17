@@ -38,6 +38,12 @@ class Order(AutoMarshallingModel):
             ref_id = path.split(self.order_ref)[1]
         return ref_id
 
+    def get_secret_id(self):
+        ref_id = None
+        if len(self.secret_href) > 0:
+            ref_id = path.split(self.secret_href)[1]
+        return ref_id
+
     def _obj_to_json(self):
         secret_dict = self.secret._obj_to_dict()
         return dict_to_str({'secret': secret_dict})
