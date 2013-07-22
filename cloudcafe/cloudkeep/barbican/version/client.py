@@ -21,7 +21,7 @@ from cloudcafe.cloudkeep.barbican.version.models.version import Version
 class VersionClient(AutoMarshallingRestClient):
     def __init__(self, url, serialize_format=None, deserialize_format=None):
         """
-        @param url: Base URL of meniscus api
+        @param url: Base URL of Barbican api
         @type url: String
         """
         super(VersionClient, self).__init__(serialize_format,
