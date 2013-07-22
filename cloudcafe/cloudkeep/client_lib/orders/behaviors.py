@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from os import path
+
 from cloudcafe.cloudkeep.barbican.orders.behaviors import OrdersBehavior
 
 
@@ -24,6 +26,9 @@ class ClientLibOrdersBehaviors(OrdersBehavior):
         self.config = config
         self.secrets_client = secrets_client
         self.cl_client = cl_client
+
+    def get_id_from_ref(self, ref):
+        return path.split(ref)[1]
 
     def create_and_check_order(self, name=None, expiration=None,
                                algorithm=None, bit_length=None,

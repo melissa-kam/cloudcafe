@@ -132,6 +132,12 @@ class SecretRef(AutoMarshallingModel):
     def _dict_to_obj(cls, json_dict):
         return SecretRef(reference=json_dict.get('secret_ref'))
 
+    def get_id(self):
+        ref_id = None
+        if len(self.reference) > 0:
+            ref_id = path.split(self.reference)[1]
+        return ref_id
+
 
 class UpdateSecret(AutoMarshallingModel):
 

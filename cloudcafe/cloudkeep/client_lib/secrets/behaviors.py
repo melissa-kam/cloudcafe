@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from os import path
+
 from cloudcafe.cloudkeep.barbican.secrets.behaviors import SecretsBehaviors
 
 
@@ -55,7 +57,7 @@ class ClientLibSecretsBehaviors(SecretsBehaviors):
         return secret
 
     def delete_secret(self, secret_ref):
-        secret_id = self.get_secret_id_from_ref(secret_ref=secret_ref)
+        secret_id = path.split(secret_ref)[1]
         self.remove_from_created_secrets(secret_id=secret_id)
         resp = self.cl_client.delete_secret(href=secret_ref)
         return resp

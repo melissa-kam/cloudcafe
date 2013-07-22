@@ -21,9 +21,6 @@ from cloudcafe.cloudkeep.barbican.secrets.models.secret import Secret
 
 
 class Order(AutoMarshallingModel):
-    STATUS_PENDING = 'PENDING'
-    STATUS_ACTIVE = 'ACTIVE'
-    STATUS_ERROR = 'ERROR'
 
     def __init__(self, secret, secret_href=None, status=None, order_ref=None):
         super(Order, self).__init__()
@@ -35,8 +32,8 @@ class Order(AutoMarshallingModel):
     def get_id_from_ref(self, ref):
         """Returns id from reference."""
         ref_id = None
-        if len(self.ref) > 0:
-            ref_id = path.split(self.ref)[1]
+        if len(ref) > 0:
+            ref_id = path.split(ref)[1]
         return ref_id
 
     def get_id(self):
@@ -72,6 +69,13 @@ class OrderRef(AutoMarshallingModel):
     def __init__(self, reference):
         super(OrderRef, self).__init__()
         self.reference = reference
+
+    def get_id(self):
+        """Returns order id."""
+        ref_id = None
+        if len(self.reference) > 0:
+            ref_id = path.split(self.reference)[1]
+        return ref_id
 
     @classmethod
     def _json_to_obj(cls, serialized_str):
