@@ -139,20 +139,11 @@ class OrdersBehavior(object):
             if type(e.message.reason) is BadStatusLine:
                 return {'status_code': 0}
 
-        order_ref = order_id = None
-        if resp.entity is not None:
-            order_ref = resp.entity.reference
-
-        if order_ref is not None:
-            order_id = self.get_id_from_ref(order_ref)
-            self.created_orders.append(order_id)
-
-        return {
-            'status_code': resp.status_code,
-            'order_ref': order_ref,
-            'order_id': order_id,
-            'resp_obj': resp
-        }
+        behavior_response = CloudkeepResponse(resp=resp)
+        order_id = behavior_response.id
+        if order_id is not None:
+            self.created_orders.append(behavior_response.id)
+        return behavior_response
 
     def delete_order(self, order_id, delete_secret=True):
         if delete_secret:
