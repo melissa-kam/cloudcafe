@@ -16,6 +16,7 @@ limitations under the License.
 from os import path
 
 from cloudcafe.cloudkeep.barbican.orders.behaviors import OrdersBehavior
+from cloudcafe.cloudkeep.common.responses import CloudkeepResponse
 
 
 class ClientLibOrdersBehaviors(OrdersBehavior):
@@ -38,10 +39,10 @@ class ClientLibOrdersBehaviors(OrdersBehavior):
             algorithm=algorithm, bit_length=bit_length,
             cypher_type=cypher_type, mime_type=mime_type)
         resp = self.barb_client.get_order(order.id)
-        return {
-            'order': order,
-            'get_resp': resp
-        }
+
+        behavior_response = CloudkeepResponse(entity=order,
+                                              get_resp=resp)
+        return behavior_response
 
     def create_order(self, name=None, expiration=None, algorithm=None,
                      bit_length=None, cypher_type=None, mime_type=None):

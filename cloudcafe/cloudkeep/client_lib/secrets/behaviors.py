@@ -16,6 +16,7 @@ limitations under the License.
 from os import path
 
 from cloudcafe.cloudkeep.barbican.secrets.behaviors import SecretsBehaviors
+from cloudcafe.cloudkeep.common.responses import CloudkeepResponse
 
 
 class ClientLibSecretsBehaviors(SecretsBehaviors):
@@ -36,10 +37,10 @@ class ClientLibSecretsBehaviors(SecretsBehaviors):
             bit_length=bit_length, cypher_type=cypher_type,
             plain_text=plain_text, mime_type=mime_type)
         resp = self.barb_client.get_secret(secret.id)
-        return {
-            'secret': secret,
-            'get_resp': resp
-        }
+
+        behavior_response = CloudkeepResponse(entity=secret,
+                                              get_resp=resp)
+        return behavior_response
 
     def create_secret(self, name=None, expiration=None, algorithm=None,
                       bit_length=None, cypher_type=None, plain_text=None,

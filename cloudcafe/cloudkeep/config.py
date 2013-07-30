@@ -115,27 +115,3 @@ class CloudKeepClientLibConfig(ConfigSectionInterface):
     @property
     def token(self):
         return self.get("token")
-
-
-class CloudKeepKeystoneConfig(ConfigSectionInterface):
-    SECTION_NAME = 'cloudkeep-keystone'
-
-    @property
-    def authentication_endpoint(self):
-        return self.get("authentication_endpoint")
-
-    @property
-    def username(self):
-        return self.get("username")
-
-    @property
-    def password(self):
-        return self.get("password")
-
-    @property
-    def auth_tenant(self):
-        return self.get("auth_tenant")
-
-    @property
-    def endpoint(self):
-        return self.get("endpoint")

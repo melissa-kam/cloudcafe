@@ -13,11 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from datetime import datetime, timedelta
-
 from cloudcafe.common.tools import time
-from cloudcafe.cloudkeep.common.responses import CloudkeepResponse, \
-    CreateAndGetResponse
+from cloudcafe.cloudkeep.common.responses import CloudkeepResponse
 
 
 class SecretsBehaviors(object):
@@ -36,8 +33,8 @@ class SecretsBehaviors(object):
             bit_length=bit_length, cypher_type=cypher_type,
             plain_text=plain_text, mime_type=mime_type)
         get_resp = self.client.get_secret(resp.id)
-        behavior_resp = CreateAndGetResponse(
-            create_resp=resp, get_resp=get_resp)
+        behavior_resp = CloudkeepResponse(resp=resp.create_resp,
+                                          get_resp=get_resp)
         return behavior_resp
 
     def create_secret_from_config(self, use_expiration=True,

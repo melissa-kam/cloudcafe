@@ -17,8 +17,7 @@ from httplib import BadStatusLine
 from requests.exceptions import ConnectionError
 
 from cloudcafe.common.tools import time
-from cloudcafe.cloudkeep.common.responses import CloudkeepResponse, \
-    CreateAndGetResponse
+from cloudcafe.cloudkeep.common.responses import CloudkeepResponse
 
 
 class OrdersBehavior(object):
@@ -38,8 +37,8 @@ class OrdersBehavior(object):
             name=name, algorithm=algorithm, bit_length=bit_length,
             cypher_type=cypher_type, mime_type=mime_type)
         get_order_resp = self.orders_client.get_order(order_id=resp.id)
-        behavior_response = CreateAndGetResponse(create_resp=resp,
-                                                 get_resp=get_order_resp)
+        behavior_response = CloudkeepResponse(resp=resp.create_resp,
+                                              get_resp=get_order_resp)
         return behavior_response
 
     def create_order_from_config(self, use_expiration=False):
@@ -87,6 +86,8 @@ class OrdersBehavior(object):
             # Gracefully handling when Falcon doesn't properly handle our req
             if type(e.message.reason) is BadStatusLine:
                 return {'status_code': 0}
+            else:
+                raise e
 
         behavior_response = CloudkeepResponse(resp=resp)
         order_id = behavior_response.id
@@ -114,30 +115,8 @@ class OrdersBehavior(object):
             # Gracefully handling when Falcon doesn't properly handle our req
             if type(e.message.reason) is BadStatusLine:
                 return {'status_code': 0}
-
-        behavior_response = CloudkeepResponse(resp=resp)
-        order_id = behavior_response.id
-        if order_id is not None:
-            self.created_orders.append(behavior_response.id)
-        return behavior_response
-
-    def create_order_w_plain_text(self, name=None, algorithm=None,
-                                  bit_length=None, cypher_type=None,
-                                  mime_type=None, expiration=None,
-                                  plain_text=None):
-        try:
-            resp = self.orders_client.create_order_w_plain_text(
-                name=name,
-                algorithm=algorithm,
-                bit_length=bit_length,
-                cypher_type=cypher_type,
-                mime_type=mime_type,
-                expiration=expiration,
-                plain_text=plain_text)
-        except ConnectionError as e:
-            # Gracefully handling when Falcon doesn't properly handle our req
-            if type(e.message.reason) is BadStatusLine:
-                return {'status_code': 0}
+            else:
+                raise e
 
         behavior_response = CloudkeepResponse(resp=resp)
         order_id = behavior_response.id

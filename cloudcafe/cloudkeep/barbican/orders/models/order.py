@@ -32,7 +32,7 @@ class Order(AutoMarshallingModel):
     def get_id_from_ref(self, ref):
         """Returns id from reference."""
         ref_id = None
-        if len(ref) > 0:
+        if ref is not None and len(ref) > 0:
             ref_id = path.split(ref)[1]
         return ref_id
 
@@ -69,13 +69,6 @@ class OrderRef(AutoMarshallingModel):
     def __init__(self, reference):
         super(OrderRef, self).__init__()
         self.reference = reference
-
-    def get_id(self):
-        """Returns order id."""
-        ref_id = None
-        if len(self.reference) > 0:
-            ref_id = path.split(self.reference)[1]
-        return ref_id
 
     @classmethod
     def _json_to_obj(cls, serialized_str):

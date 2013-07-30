@@ -93,8 +93,9 @@ class SecretMetadata(Secret):
         return not self == other
 
     def get_id(self):
+        """Returns secret id."""
         ref_id = None
-        if len(self.secret_ref) > 0:
+        if self.secret_ref is not None and len(self.secret_ref) > 0:
             ref_id = path.split(self.secret_ref)[1]
         return ref_id
 
@@ -131,12 +132,6 @@ class SecretRef(AutoMarshallingModel):
     @classmethod
     def _dict_to_obj(cls, json_dict):
         return SecretRef(reference=json_dict.get('secret_ref'))
-
-    def get_id(self):
-        ref_id = None
-        if len(self.reference) > 0:
-            ref_id = path.split(self.reference)[1]
-        return ref_id
 
 
 class UpdateSecret(AutoMarshallingModel):
