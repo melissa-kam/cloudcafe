@@ -31,12 +31,14 @@ class ClientLibSecretsClient():
             authenticate=authenticate, request=request, **kwargs)
 
     def create_secret(self, name=None, expiration=None, algorithm=None,
-                      bit_length=None, cypher_type=None, plain_text=None,
-                      mime_type=None):
+                      bit_length=None, cypher_type=None, payload=None,
+                      payload_content_type=None,
+                      payload_content_encoding=None):
         secret = self.conn.create_secret(
             name=name, expiration=expiration, algorithm=algorithm,
             bit_length=bit_length, cypher_type=cypher_type,
-            plain_text=plain_text, mime_type=mime_type)
+            payload=payload, payload_content_type=payload_content_type,
+            payload_content_encoding=payload_content_encoding)
 
         return secret
 
@@ -66,9 +68,10 @@ class ClientLibSecretsClient():
     def get_secret(self, href):
         return self.conn.get_secret(href=href)
 
-    def get_raw_secret_by_id(self, secret_id, mime_type):
+    def get_raw_secret_by_id(self, secret_id, payload_content_type):
         return self.conn.get_raw_secret_by_id(
-            secret_id=secret_id, mime_type=mime_type)
+            secret_id=secret_id, payload_content_type=payload_content_type)
 
-    def get_raw_secret(self, href, mime_type):
-        return self.conn.get_raw_secret(href=href, mime_type=mime_type)
+    def get_raw_secret(self, href, payload_content_type):
+        return self.conn.get_raw_secret(
+            href=href, payload_content_type=payload_content_type)

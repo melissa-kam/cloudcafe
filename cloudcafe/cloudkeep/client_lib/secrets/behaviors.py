@@ -28,12 +28,14 @@ class ClientLibSecretsBehaviors(SecretsBehaviors):
 
     def create_and_check_secret(self, name=None, expiration=None,
                                 algorithm=None, bit_length=None,
-                                cypher_type=None, plain_text=None,
-                                mime_type=None):
+                                cypher_type=None, payload=None,
+                                payload_content_type=None,
+                                payload_content_encoding=None):
         secret = self.create_secret_overriding_cfg(
             name=name, expiration=expiration, algorithm=algorithm,
             bit_length=bit_length, cypher_type=cypher_type,
-            plain_text=plain_text, mime_type=mime_type)
+            payload=payload, payload_content_type=payload_content_type,
+            payload_content_encoding=payload_content_encoding)
         resp = self.barb_client.get_secret(secret.id)
 
         behavior_response = CloudkeepResponse(entity=secret,
@@ -41,16 +43,18 @@ class ClientLibSecretsBehaviors(SecretsBehaviors):
         return behavior_response
 
     def create_secret(self, name=None, expiration=None, algorithm=None,
-                      bit_length=None, cypher_type=None, plain_text=None,
-                      mime_type=None):
+                      bit_length=None, cypher_type=None, payload=None,
+                      payload_content_type=None,
+                      payload_content_encoding=None):
         secret = self.cl_client.create_secret(
             name=name,
             expiration=expiration,
             algorithm=algorithm,
             bit_length=bit_length,
             cypher_type=cypher_type,
-            plain_text=plain_text,
-            mime_type=mime_type)
+            payload=payload,
+            payload_content_type=payload_content_type,
+            payload_content_encoding=payload_content_encoding)
 
         self.created_secrets.append(secret.id)
         return secret

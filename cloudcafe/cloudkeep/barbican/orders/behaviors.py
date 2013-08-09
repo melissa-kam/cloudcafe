@@ -105,7 +105,7 @@ class OrdersBehavior(object):
                                bit_length=None, cypher_type=None,
                                payload_content_type=None, expiration=None,
                                payload_content_encoding=None, payload=None):
-        """Creates an order with a plain_text value. Separate from
+        """Creates an order with a payload value. Separate from
         standard create order method because it is used for negative
         testing only and is expected to fail.
         """
@@ -116,8 +116,11 @@ class OrdersBehavior(object):
                 bit_length=bit_length or self.config.bit_length,
                 cypher_type=cypher_type or self.config.cypher_type,
                 expiration=expiration,
-                payload_content_type=payload_content_type,
-                payload_content_encoding=payload_content_encoding,
+                payload_content_type=
+                payload_content_type or self.config.payload_content_type,
+                payload_content_encoding=
+                (payload_content_encoding or
+                 self.config.payload_content_encoding),
                 payload=payload)
         except ConnectionError as e:
             # Gracefully handling when Falcon doesn't properly handle our req
